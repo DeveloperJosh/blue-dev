@@ -86,3 +86,40 @@
     border-radius: 0.5rem;
     margin-bottom: 1rem;
   }
+
+  code {
+    display: block;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #221f1f;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  background: #121212;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #35C0F0;
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.25), inset -2px -2px -2px rgba(0,0,0,0.25);
+}
+
+.console {
+  background: #121212;
+  color: #35C0F0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  overflow: auto;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre;
+}
+
+#output {
+  display: none;
+}

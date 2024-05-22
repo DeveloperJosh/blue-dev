@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 router.post('/user', async (req, res) => {
     const { username, email, password } = req.body;
     const user = await db.createUser(username, email, password);
-    return res.status(201).send(user);
+    return res.status(201).json({ message: user });
 });
 
 // login GET /user
@@ -33,7 +33,7 @@ router.get('/user', async (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
     // gen token
-    const token = auth.generateToken(req.body.email);
+    const token = auth.generateJWT(req.body.email);
 
     // save token in cookie
     res.cookie(
@@ -47,22 +47,17 @@ router.get('/user', async (req, res) => {
         }
     )
 
-    return res.status(200).send("OK")
+    return res.status(200).json({ message: 'Logged in', "token": token });
 });
 
 // logout
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
-    return res.status(200).send("OK")
+    return res.status(200).json({ message: 'Logged out' });
 });
 
-// test token   
-router.get('/test', auth.authenticateToken, (req, res) => {
-    return res.status(200).json({ message: 'Token is valid' });
-});
-
-router.get('/rate', rateLimit, (req, res) => {
-    return res.status(200).json({ message: 'Rate limit is OK' });
+router.get('/test', auth.authenticateUser, (req, res) => {
+    return res.status(200).json({ message: 'You are authenticated' });
 });
 
 module.exports = router;

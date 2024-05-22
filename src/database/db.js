@@ -25,6 +25,7 @@ pool.query(`
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
         email VARCHAR(100) UNIQUE,
+        token VARCHAR(128),
         password VARCHAR(128),
         salt VARCHAR(32)
     );
@@ -93,11 +94,40 @@ const loginWithPassword = async (email, password) => {
     }
     
     return null;
+}
+
+const saveToken = async (token, email) => {
+    // generate a random string of 64 characters and save it in the database
+    email = email.toLowerCase();
+    const query = {
+        text: 'UPDATE users SET token = $1 WHERE email = $2',
+        values: [token, email],
+    };
+    const result = await pool.query(query);
+    if (result.rowCount === 0) {
+        throw new Error('No user found with the provided email');
+    }
+    return token;
 };
+
+const checkToken = async (token) => {
+    const query = {
+        text: 'SELECT * FROM users WHERE token = $1',
+        values: [token],
+    };
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 module.exports = {
     pool,
     createUser,
     loginWithPassword,
     clearCache,
+    saveToken,
+    checkToken
 };
