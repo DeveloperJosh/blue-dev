@@ -4,11 +4,11 @@ dotenv.config();
 
 const pool = new pg.Pool
 ({
-    user: 'postgres',
+    user: process.env.DB_USER,
     host: process.env.DB_HOST,
-    database: 'node',
+    database: process.env.DB_NAME,
     password: process.env.DB_PASS,
-    port: 5433,
+    port: process.env.DB_PORT,
 });
 
 // gen all tables if they don't exist
