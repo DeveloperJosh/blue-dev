@@ -37,10 +37,12 @@ const createUser = async (name, email, password) => {
     
     // Hash the password with the salt
     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+
+    const lowerCaseEmail = email.toLowerCase();
     
     const query = {
         text: 'INSERT INTO users (name, email, password, salt) VALUES ($1, $2, $3, $4)',
-        values: [name, email, hash, salt],
+        values: [name, lowerCaseEmail, hash, salt],
     }; 
 
     // error handling
@@ -59,6 +61,8 @@ const createUser = async (name, email, password) => {
 
 // Login with password and email
 const loginWithPassword = async (email, password) => {
+    // Convert email to lowercase
+    email = email.toLowerCase();
     // Check cache first
     const cachedUser = myCache.get(email);
     if (cachedUser) {
