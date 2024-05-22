@@ -4,6 +4,7 @@
 const express = require('express');
 const db = require('../database/db');
 const auth = require('../middleware/auth');
+const rateLimit = require('../middleware/ratelimit');
 const router = express.Router();
 
 //get time from the database
@@ -20,7 +21,7 @@ router.get('/', (req, res) => {
 router.post('/user', async (req, res) => {
     const { username, email, password } = req.body;
     const user = await db.createUser(username, email, password);
-    return res.status(201).json({ message: user });
+    return res.status(201).send(user);
 });
 
 // login GET /user
@@ -34,21 +35,34 @@ router.get('/user', async (req, res) => {
     // gen token
     const token = auth.generateToken(req.body.email);
 
-    // add token to cookie
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-    });
+    // save token in cookie
+    res.cookie(
+        'token',
+        token,
+        {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        }
+    )
 
-    // log cookie
-    console.log(req.cookies);
-    return res.status(200).json({ message: 'User logged in' });
+    return res.status(200).send("OK")
+});
+
+// logout
+router.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    return res.status(200).send("OK")
 });
 
 // test token   
 router.get('/test', auth.authenticateToken, (req, res) => {
     return res.status(200).json({ message: 'Token is valid' });
+});
+
+router.get('/rate', rateLimit, (req, res) => {
+    return res.status(200).json({ message: 'Rate limit is OK' });
 });
 
 module.exports = router;

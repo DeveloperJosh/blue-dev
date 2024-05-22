@@ -1,8 +1,15 @@
 const pg = require('pg');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
-const { text } = require('body-parser');
+const NodeCache = require("node-cache");
+const myCache = new NodeCache();
 dotenv.config();
+
+const clearCache = () => {
+    myCache.flushAll();
+    console.log('Cache cleared');
+}
+
 
 const pool = new pg.Pool({
     user: process.env.DB_USER,
@@ -39,7 +46,7 @@ const createUser = async (name, email, password) => {
     // error handling
     try {
         await pool.query(query);
-        return "User created"
+        return "OK"
     } catch (error) {
         if (error.code === '23505') {
             // send error to the client
@@ -52,6 +59,15 @@ const createUser = async (name, email, password) => {
 
 // Login with password and email
 const loginWithPassword = async (email, password) => {
+    // Check cache first
+    const cachedUser = myCache.get(email);
+    if (cachedUser) {
+        const hash = crypto.pbkdf2Sync(password, cachedUser.salt, 1000, 64, 'sha512').toString('hex');
+        if (hash === cachedUser.password) {
+            return cachedUser;
+        }
+    }
+
     // Retrieve user from the database by email
     const query = {
         text: 'SELECT * FROM users WHERE email = $1',
@@ -66,14 +82,18 @@ const loginWithPassword = async (email, password) => {
         const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, 'sha512').toString('hex');
         
         if (hash === user.password) {
+            // Store user in cache
+            myCache.set(email, user);
             return user;
         }
     }
     
     return null;
 };
+
 module.exports = {
     pool,
     createUser,
     loginWithPassword,
+    clearCache,
 };

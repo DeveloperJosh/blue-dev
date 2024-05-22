@@ -4,6 +4,8 @@ const path = require('path');
 const db = require('./database/db');
 const cookieParser = require("cookie-parser");
 
+setInterval(db.clearCache, 24 * 60 * 60 * 1000);
+
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

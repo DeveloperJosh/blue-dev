@@ -12,6 +12,10 @@
     background-color: #1c1c1c;
   }
 
+  .text-center {
+    text-align: center;
+  }
+
   a {
     color: #1e90ff;
   }
@@ -74,4 +78,11 @@
   form button:hover {
     background: #ffffff;
     color: #1e90ff;
+  }
+
+  .box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
   }
