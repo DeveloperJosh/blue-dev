@@ -5,9 +5,13 @@ const express = require('express');
 const db = require('../database/db');
 const router = express.Router();
 
+//get time from the database
 router.get('/', (req, res) => {
-    res.json({
-        message: db.getTime(),
+    db.pool.query('SELECT NOW()', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        return res.status(200).json(results.rows);
     });
 });
 
