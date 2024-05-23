@@ -19,11 +19,7 @@ app.set('view engine', 'ejs');
 app.enable('trust proxy')
 app.use(express.static(__dirname + '/public'));
 
-app.use('/api', require('./routes/api'));
-
-app.get('/', (req, res) => {
-    res.render('index');
-});
+app.use('/', require('./routes/api'));
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');

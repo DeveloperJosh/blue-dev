@@ -9,12 +9,8 @@ const router = express.Router();
 
 //get time from the database
 router.get('/', (req, res) => {
-    db.pool.query('SELECT NOW()', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        return res.status(200).json(results.rows);
-    });
+    // render the views/index.ejs file
+    return res.render('index');
 });
 
 // create a user
@@ -26,6 +22,11 @@ router.post('/user', async (req, res) => {
 
 // login GET /user
 router.get('/user', async (req, res) => {
+
+    // if no body.email or body.password
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ message: 'Email and password required' });
+    }
     const user = await db.loginWithPassword(req.body.email, req.body.password);
 
     //check if password is correct
