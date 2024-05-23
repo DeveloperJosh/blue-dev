@@ -5,7 +5,7 @@ const cache = new NodeCache();
 
 const rateLimit = (req, res, next) => {
 
-    const req_limit = 5;
+    const req_limit = 50;
 
     const ip = req.ip;
     const currentRequests = cache.get(ip) || [];
