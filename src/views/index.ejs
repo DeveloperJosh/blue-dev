@@ -53,27 +53,23 @@
           </code>
         </hgroup>
         <hgroup class="box">
-          <h3>GET /api/test</h3>
-          <p>This endpoint tests to make sure you're logged in, It requires a jwt token</p>
+          <h3>GET /api/logout</h3>
+          <p>This endpoint logs the user out, It requires a jwt token</p>
           <p>Example:</p>
           <code>
-              curl -X GET http://localhost:3000/api/test
+            curl -X GET http://localhost:3000/api/logout
           </code>
-          <button id="testButton">Test API</button>
-          <pre id="output" class="console"></pre>
-
+        </hgroup>
+        <hgroup class="box">
+          <h3>GET /api/test</h3>
+          <p>This endpoint returns a secret message, It requires a jwt token</p>
+          <p>Example:</p>
+          <code>
+            curl -X GET http://localhost:3000/api/test
+          </code>
           <script>
-            document.getElementById('testButton').addEventListener('click', async () => {
-              const response = await fetch('/api/test', {
-                method: 'GET',
-              });
-              const data = await response.json();
-              document.getElementById('output').style.display = 'block';
-              document.getElementById('output').innerText = JSON.stringify(data, null, 2);
-            });
-        </script>
-        <p>You're gonna get Unauthorized as this api keeps the JWT token in cookies</p>
-      </hgroup>
+          </script>
+        </hgroup>
       </section>
     </div>
   </main>
