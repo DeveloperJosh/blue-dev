@@ -4,7 +4,7 @@ const db = require('../database/db');
 dotenv.config();
 
 const generateJWT = (user) => {
-    return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
         // 24 hours
         expiresIn: '24h',
     });

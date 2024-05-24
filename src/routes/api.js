@@ -1,62 +1,98 @@
-// api route for the app
 // Path: src/routes/api.js
-// Compare this snippet from src/index.js:
 const express = require('express');
 const db = require('../database/db');
 const auth = require('../middleware/auth');
 const rateLimit = require('../middleware/ratelimit');
 const router = express.Router();
 
-//get time from the database
+// Render the home page
 router.get('/', (req, res) => {
-    // render the views/index.ejs file
     return res.render('index');
 });
 
-// create a user
-router.post('/user', async (req, res) => {
-    const { username, email, password } = req.body;
-    const user = await db.createUser(username, email, password);
-    return res.status(201).json({ message: user });
+// Render the signup page
+router.get('/signup', (req, res) => {
+    return res.render('signup');
 });
 
-// login GET /user
-router.get('/user', async (req, res) => {
+// Render the login page
+router.get('/login', (req, res) => {
+    return res.render('login');
+});
 
-    // if no body.email or body.password
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ message: 'Email and password required' });
+// Create a user
+router.post('/create', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const user = await db.createUser(username, email, password);
+        return res.status(201).json(user);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error creating user', error });
     }
-    const user = await db.loginWithPassword(req.body.email, req.body.password);
+});
 
-    //check if password is correct
-    if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    // gen token
-    const token = auth.generateJWT(req.body.email);
+// User login
+router.post('/user', async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-    // save token in cookie
-    res.cookie(
-        'token',
-        token,
-        {
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password required' });
+        }
+
+        const user = await db.loginWithPassword(email, password);
+
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const token = auth.generateJWT(user);
+
+        res.cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
             maxAge: 1000 * 60 * 60 * 24, // 24 hours
-        }
-    )
+        });
 
-    return res.status(200).json({ message: 'Logged in', "token": token });
+        return res.status(200).json({ message: 'Logged in', token, userId: user.id });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error logging in', error });
+    }
 });
 
-// logout
+router.get('/user/:id', auth.authenticateUser, async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id, 10); // Convert userId to a number
+
+        // Log the types for debugging
+        console.log(typeof userId, userId, typeof req.user.id, req.user.id);
+
+        // Check if the user id is the same as the authenticated user id
+        if (userId !== req.user.id) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        const user = await db.getUserById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error retrieving user data', error });
+    }
+});
+
+
+// User logout
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
     return res.status(200).json({ message: 'Logged out' });
 });
 
+// Test authentication
 router.get('/test', auth.authenticateUser, (req, res) => {
     return res.status(200).json({ message: 'You are authenticated' });
 });

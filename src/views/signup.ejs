@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup Page</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+    <div class="pico-container">
+        <h2 class="pico-title">Signup</h2>
+        <form action="/create" method="POST" class="pico-form">
+            <label for="username" class="pico-label">Username:</label>
+            <input type="text" id="username" name="username" required class="pico-input">
+            <label for="email" class="pico-label">Email:</label>
+            <input type="email" id="email" name="email" required class="pico-input">
+            <label for="password" class="pico-label">Password:</label>
+            <input type="password" id="password" name="password" required class="pico-input">
+            <input type="submit" value="Signup" class="pico-button">
+        </form>
+    </div>
+</body>
+</html>

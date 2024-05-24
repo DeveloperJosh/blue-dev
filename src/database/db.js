@@ -96,6 +96,19 @@ const loginWithPassword = async (email, password) => {
     return null;
 }
 
+const getUserById = async (id) => {
+    const query = {
+        text: 'SELECT * FROM users WHERE id = $1',
+        values: [id],
+    };
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+        return result.rows[0];
+    } else {
+        return null;
+    }
+}
+
 const saveToken = async (token, email) => {
     // generate a random string of 64 characters and save it in the database
     email = email.toLowerCase();
@@ -129,5 +142,6 @@ module.exports = {
     loginWithPassword,
     clearCache,
     saveToken,
-    checkToken
+    checkToken,
+    getUserById,
 };

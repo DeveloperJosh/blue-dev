@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script>
+        window.onload = function() {
+            document.querySelector('.pico-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const email = document.querySelector('#email').value;
+                const password = document.querySelector('#password').value;
+
+                fetch('/user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        window.location.href = `/user/${data.userId}`;
+                    } else {
+                        // Handle error
+                    }
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="pico-container">
+        <h2 class="pico-title">Login</h2>
+        <form class="pico-form">
+            <label for="email" class="pico-label">Email:</label>
+            <input type="text" id="email" name="email" required class="pico-input">
+            <label for="password" class="pico-label">Password:</label>
+            <input type="password" id="password" name="password" required class="pico-input">
+            <input type="submit" value="Login" class="pico-button">
+        </form>
+    </div>
+</body>
+</html>
